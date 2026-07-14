@@ -1,0 +1,161 @@
+/* src/styles/product.css
+   Estilos exclusivos de ProductCard. La card entera es clickeable (navega
+   al detalle); el bloque de precio reserva una altura mínima fija para que
+   ninguna card salte de tamaño según tenga o no descuento. */
+
+.product-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: transform 220ms ease, box-shadow 220ms ease;
+}
+
+.product-card:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  z-index: 1;
+}
+
+/* ---------- Badge (más vendido / envío gratis / etc.) ---------- */
+
+.product-card__badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 2;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 4px 8px;
+  background: rgb(var(--ink));
+  color: var(--bg);
+}
+
+/* ---------- Favorito ---------- */
+
+.product-card__favorite {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(var(--ink), 0.4);
+  transition: transform 200ms ease, color 200ms ease;
+}
+
+.product-card__favorite-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.product-card__favorite.is-active {
+  color: #e0455f;
+}
+
+.product-card__favorite.is-bumping {
+  transform: scale(1.35);
+}
+
+/* ---------- Imagen (siempre 1:1, sin saltos de layout) ---------- */
+
+.product-card__image {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(var(--ink), 0.04);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.product-card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 220ms ease;
+}
+
+.product-card:hover .product-card__image img {
+  transform: scale(1.05);
+}
+
+.product-card__icon {
+  width: 96px;
+  height: 96px;
+  color: var(--accent);
+}
+
+/* ---------- Bloque de precio: altura reservada ---------- */
+/* Orden: precio original (tachado) -> precio final + % de descuento */
+
+.product-card__price-block {
+  min-height: 64px;
+  margin-bottom: 10px;
+}
+
+.product-card__original-price {
+  margin: 0 0 4px;
+  font-size: 13px;
+  text-decoration: line-through;
+  color: rgba(var(--ink), 0.4);
+  line-height: 1.2;
+}
+
+.product-card__price-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+}
+
+.product-card__final-price {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1.1;
+}
+
+.product-card__discount {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  background: var(--green);
+  color: #ffffff;
+}
+
+.product-card__discount--hidden {
+  background: transparent;
+  color: transparent;
+  padding: 2px 0;
+}
+
+/* ---------- Título y procedencia ---------- */
+
+.product-card__title {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(var(--ink), 0.85);
+  line-height: 1.3;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.6em;
+}
+
+.product-card__origin {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(var(--ink), 0.45);
+}
