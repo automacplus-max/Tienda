@@ -16,15 +16,18 @@
 }
 
 .admin__header h1 {
-  font-size: 26px;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 500;
+  font-style: italic;
   margin: 0;
 }
 
 .admin__exit {
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 0.1em;
-  color: var(--accent);
+  text-transform: uppercase;
+  color: rgb(var(--gold));
   font-weight: 700;
 }
 
@@ -57,7 +60,7 @@
 }
 
 .admin__brand-chip button {
-  color: var(--accent);
+  color: rgb(var(--gold));
 }
 
 .admin__brand-input-row {
@@ -177,7 +180,7 @@
   background: var(--bg);
   border: 1px solid var(--border);
   font-size: 10px;
-  color: var(--accent);
+  color: rgb(var(--gold));
 }
 
 .admin-form__upload-row {
@@ -256,7 +259,7 @@
 }
 
 .admin-form__variant-value button {
-  color: var(--accent);
+  color: rgb(var(--gold));
 }
 
 .admin-form__remove-group {
@@ -330,7 +333,7 @@
 .admin__product-icon {
   width: 32px;
   height: 32px;
-  color: var(--accent);
+  color: rgb(var(--gold));
 }
 
 .admin__product-info {
@@ -352,7 +355,7 @@
 .admin__edit-btn {
   font-size: 10px;
   letter-spacing: 0.1em;
-  color: var(--accent);
+  color: rgb(var(--gold));
   font-weight: 700;
 }
 
@@ -375,7 +378,7 @@
 }
 
 .admin__confirm-delete button:first-of-type {
-  color: var(--accent);
+  color: rgb(var(--gold));
   font-weight: 700;
 }
 

@@ -12,9 +12,10 @@
 }
 
 .detail__back {
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 0.15em;
-  color: var(--accent);
+  text-transform: uppercase;
+  color: rgb(var(--gold));
   font-weight: 700;
   margin-bottom: 32px;
 }
@@ -98,7 +99,7 @@
 }
 
 .detail__thumb.is-active {
-  border-color: var(--accent);
+  border-color: rgb(var(--gold));
 }
 
 .detail__thumb img {
@@ -128,10 +129,11 @@
 }
 
 .detail__final-price {
-  font-size: 44px;
-  font-weight: 800;
+  font-family: var(--font-display);
+  font-size: clamp(36px, 4vw, 48px);
+  font-weight: 500;
   line-height: 1;
-  color: var(--accent);
+  color: rgb(var(--ink));
 }
 
 .detail__final-price--standalone {
@@ -139,11 +141,13 @@
 }
 
 .detail__discount {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
-  padding: 6px 10px;
-  background: var(--green);
-  color: #ffffff;
+  letter-spacing: 0.03em;
+  padding: 6px 12px;
+  border: 1px solid rgba(var(--gold), 0.5);
+  color: rgb(var(--gold));
+  background: transparent;
 }
 
 .detail__badge {
@@ -166,9 +170,11 @@
 }
 
 .detail__title {
-  font-size: 18px;
-  font-weight: 400;
-  color: rgba(var(--ink), 0.85);
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 500;
+  font-style: italic;
+  color: rgba(var(--ink), 0.9);
   margin: 0 0 8px;
 }
 
@@ -188,7 +194,7 @@
 .detail__stars {
   display: flex;
   gap: 2px;
-  color: var(--accent);
+  color: rgb(var(--gold));
 }
 
 .detail__star {
@@ -248,7 +254,7 @@
 }
 
 .detail__info-value--accent {
-  color: var(--accent);
+  color: rgb(var(--gold));
 }
 
 .detail__variants {
@@ -274,8 +280,8 @@
 }
 
 .detail__variant-chip.is-active {
-  border-color: var(--accent);
-  color: var(--accent);
+  border-color: rgb(var(--gold));
+  color: rgb(var(--gold));
 }
 
 .detail__add-btn {
@@ -319,8 +325,10 @@
 }
 
 .detail__reviews-title {
-  font-size: 24px;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 500;
+  font-style: italic;
   margin: 0 0 32px;
 }
 

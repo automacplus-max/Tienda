@@ -2,28 +2,32 @@
    Reset + tokens de diseño (claro/oscuro) + layout general + piezas de UI
    genéricas y reutilizables (botones, modal, dropdown, gate, toast). Los
    estilos propios de cada página/sección viven en su propio archivo:
-   header.css, product.css, detail.css, cart.css, admin.css. */
+   header.css, product.css, detail.css, cart.css, admin.css.
 
-@import url("https://fonts.googleapis.com/css2?family=Mulish:wght@400;500;600;700;800&display=swap");
+   Sistema tipográfico: Fraunces (serif editorial) para titulares, precios
+   y el wordmark — el registro "casa de moda" — y Mulish (sans) para
+   etiquetas, UI y cuerpo de texto, que se lee mejor en tamaños chicos. */
+
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Mulish:wght@400;500;600;700;800&display=swap");
 
 :root {
   --bg: #ffffff;
   --ink: 23, 23, 23;
   --accent: #404040;
-  --green: #00a650;
+  --gold: 156, 122, 60;
+  --sale: #6b5a2e;
   --btn-bg: #171717;
   --btn-text: #ffffff;
-  --action: #ffd100;
-  --action-hover: #f2c200;
-  --action-text: #1a1a1a;
   --border: rgba(23, 23, 23, 0.12);
+  --font-display: "Fraunces", "Georgia", serif;
 }
 
 .raiden-app.dark {
-  --bg: #171717;
+  --bg: #14130f;
   --ink: 250, 250, 250;
   --accent: #d4d4d4;
-  --green: #5fcf82;
+  --gold: 201, 164, 99;
+  --sale: #d9c48f;
   --btn-bg: #fafafa;
   --btn-text: #0a0a0a;
   --border: rgba(250, 250, 250, 0.14);
@@ -37,6 +41,10 @@ body {
   margin: 0;
   font-family: "Mulish", sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: rgba(var(--gold), 0.28);
 }
 
 .raiden-app {
@@ -109,14 +117,15 @@ textarea {
   background: var(--btn-bg);
   color: var(--btn-text);
   font-weight: 700;
-  padding: 13px 24px;
-  font-size: 13px;
-  letter-spacing: 0.08em;
-  transition: box-shadow 0.2s ease, transform 0.15s ease;
+  padding: 13px 26px;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: box-shadow 0.25s ease, transform 0.15s ease, background-color 0.25s ease;
 }
 
 .btn-fill:hover:not(:disabled) {
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.16);
 }
 
 .btn-fill:active:not(:disabled) {
@@ -131,31 +140,37 @@ textarea {
 
 .btn-outline {
   border: 1px solid var(--border);
-  padding: 13px 24px;
-  font-size: 13px;
+  padding: 13px 26px;
+  font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  transition: border-color 0.2s ease, color 0.2s ease;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: border-color 0.25s ease, color 0.25s ease;
 }
 
 .btn-outline:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+  border-color: rgb(var(--gold));
+  color: rgb(var(--gold));
 }
 
+/* CTA principal: negro con filo dorado — reemplaza el amarillo tipo
+   marketplace por un tratamiento de "foil" discreto y elegante. */
 .btn-action {
-  background: var(--action);
-  color: var(--action-text);
-  font-weight: 700;
-  padding: 15px 24px;
-  font-size: 14px;
-  letter-spacing: 0.05em;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+  background: rgb(var(--ink));
+  color: var(--bg);
+  border: 1px solid rgb(var(--gold));
+  font-weight: 600;
+  padding: 16px 24px;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transition: background-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease, transform 0.15s ease;
 }
 
 .btn-action:hover {
-  background: var(--action-hover);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  background: rgb(var(--gold));
+  color: #171717;
+  box-shadow: 0 10px 26px rgba(var(--gold), 0.28);
 }
 
 .btn-action:active,
@@ -168,40 +183,55 @@ textarea {
 .home__main {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 40px 24px 80px;
+  padding: 56px 24px 96px;
 }
 
 .home__intro {
-  margin-bottom: 32px;
-  padding-bottom: 28px;
+  margin-bottom: 40px;
+  padding-bottom: 36px;
   border-bottom: 1px solid var(--border);
+  position: relative;
 }
 
 .home__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   font-size: 11px;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.32em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: rgb(var(--gold));
   font-weight: 600;
-  margin-bottom: 10px;
+  margin-bottom: 18px;
+}
+
+.home__eyebrow::before {
+  content: "";
+  display: block;
+  width: 28px;
+  height: 1px;
+  background: rgb(var(--gold));
 }
 
 .home__title {
-  font-size: 40px;
-  font-weight: 600;
-  line-height: 1.15;
-  margin: 0 0 14px;
+  font-family: var(--font-display);
+  font-size: clamp(38px, 5vw, 58px);
+  font-weight: 500;
+  font-style: italic;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  margin: 0 0 18px;
 }
 
 .home__title--small {
-  font-size: 28px;
-  margin-bottom: 32px;
+  font-size: clamp(28px, 4vw, 36px);
+  margin-bottom: 40px;
 }
 
 .home__desc {
   max-width: 480px;
   font-size: 14px;
-  line-height: 1.6;
+  line-height: 1.7;
   color: rgba(var(--ink), 0.55);
   margin: 0;
 }
@@ -265,17 +295,23 @@ textarea {
 }
 
 .category-tabs__item {
-  font-size: 12px;
-  letter-spacing: 0.1em;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
   font-weight: 600;
-  padding-bottom: 4px;
-  border-bottom: 2px solid transparent;
-  color: rgba(var(--ink), 0.5);
+  padding-bottom: 6px;
+  border-bottom: 1px solid transparent;
+  color: rgba(var(--ink), 0.45);
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.category-tabs__item:hover {
+  color: rgba(var(--ink), 0.75);
 }
 
 .category-tabs__item.is-active {
-  color: var(--accent);
-  border-color: var(--accent);
+  color: rgb(var(--ink));
+  border-color: rgb(var(--gold));
 }
 
 /* ---------- Filtros de precio ---------- */
@@ -297,7 +333,7 @@ textarea {
 }
 
 .filters__input:focus {
-  border-color: var(--accent);
+  border-color: rgb(var(--gold));
 }
 
 .filters__separator {
@@ -323,7 +359,7 @@ textarea {
 }
 
 .dropdown__trigger:hover {
-  border-color: var(--accent);
+  border-color: rgb(var(--gold));
 }
 
 .dropdown__arrow {
@@ -357,7 +393,7 @@ textarea {
 
 .dropdown__option:hover,
 .dropdown__option.is-active {
-  color: var(--accent);
+  color: rgb(var(--gold));
   background: rgba(var(--ink), 0.04);
 }
 
@@ -379,9 +415,9 @@ textarea {
 }
 
 .dropdown__checkbox.is-checked {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--bg);
+  background: rgb(var(--gold));
+  border-color: rgb(var(--gold));
+  color: #171717;
 }
 
 /* ---------- Search bar (usado dentro de Header) ---------- */
@@ -396,7 +432,7 @@ textarea {
 }
 
 .search-bar:focus-within {
-  border-color: var(--accent);
+  border-color: rgb(var(--gold));
 }
 
 .search-bar__icon {
@@ -424,7 +460,9 @@ textarea {
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: var(--bg);
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(var(--gold), 0.08), transparent 70%),
+    var(--bg);
   color: rgb(var(--ink));
   text-align: center;
   transition: opacity 0.6s ease;
@@ -436,61 +474,87 @@ textarea {
 }
 
 .gate__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
   font-size: 10px;
   letter-spacing: 0.5em;
   text-transform: uppercase;
-  color: rgba(var(--ink), 0.4);
-  margin-bottom: 32px;
+  color: rgba(var(--gold), 0.9);
+  margin-bottom: 40px;
+}
+
+.gate__eyebrow::before,
+.gate__eyebrow::after {
+  content: "";
+  display: block;
+  width: 32px;
+  height: 1px;
+  background: rgba(var(--gold), 0.6);
 }
 
 .gate__wordmark {
-  font-size: clamp(48px, 10vw, 96px);
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  margin: 0 0 12px;
+  font-family: var(--font-display);
+  font-size: clamp(52px, 11vw, 108px);
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: 0.01em;
+  margin: 0 0 18px;
 }
 
 .gate__tagline {
-  font-size: 12px;
-  letter-spacing: 0.35em;
+  font-size: 11px;
+  letter-spacing: 0.4em;
   text-transform: uppercase;
-  color: rgba(var(--ink), 0.45);
-  margin-bottom: 56px;
+  color: rgba(var(--ink), 0.4);
+  margin-bottom: 64px;
 }
 
 .gate__actions {
   display: flex;
-  gap: 12px;
+  gap: 14px;
   flex-wrap: wrap;
   justify-content: center;
 }
 
 .gate__btn {
-  padding: 14px 40px;
-  font-size: 12px;
-  letter-spacing: 0.25em;
+  padding: 16px 44px;
+  font-size: 11px;
+  letter-spacing: 0.28em;
   text-transform: uppercase;
-  font-weight: 700;
-  transition: all 0.2s ease;
+  font-weight: 600;
+  transition: all 0.25s ease;
 }
 
 .gate__btn--primary {
   background: rgb(var(--ink));
   color: var(--bg);
+  border: 1px solid rgb(var(--gold));
+}
+
+.gate__btn--primary:hover {
+  background: rgb(var(--gold));
+  color: #171717;
 }
 
 .gate__btn--outline {
-  border: 1px solid rgba(var(--ink), 0.35);
+  border: 1px solid rgba(var(--ink), 0.28);
+}
+
+.gate__btn--outline:hover {
+  border-color: rgb(var(--gold));
+  color: rgb(var(--gold));
 }
 
 .gate__btn:hover {
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.15);
 }
 
 .gate__note {
   font-size: 10px;
   color: rgba(var(--ink), 0.3);
-  margin-top: 32px;
+  margin-top: 36px;
+  letter-spacing: 0.04em;
 }
 
 /* ---------- Modal genérico (login / admin password) ---------- */
@@ -511,13 +575,16 @@ textarea {
   max-width: 380px;
   background: var(--bg);
   border: 1px solid var(--border);
-  padding: 32px;
+  padding: 36px 32px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
 }
 
 .modal__title {
-  font-size: 20px;
-  font-weight: 600;
-  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 500;
+  font-style: italic;
+  margin: 0 0 8px;
 }
 
 .modal__subtitle {
@@ -612,10 +679,18 @@ textarea {
   padding: 13px;
   background: rgb(var(--ink));
   color: var(--bg);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  border: 1px solid rgb(var(--gold));
   margin-bottom: 10px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.modal__submit:hover:not(:disabled) {
+  background: rgb(var(--gold));
+  color: #171717;
 }
 
 .modal__submit:disabled {
@@ -643,6 +718,7 @@ textarea {
   padding: 14px 20px;
   font-size: 12px;
   font-weight: 600;
+  border-top: 2px solid rgb(var(--gold));
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
   animation: toastIn 0.3s ease;
 }

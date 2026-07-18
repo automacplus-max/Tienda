@@ -19,9 +19,11 @@
 }
 
 .header__logo {
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: 0.03em;
   flex-shrink: 0;
 }
 
@@ -89,7 +91,7 @@
 
 .header__lang-option.is-active,
 .header__lang-option:hover {
-  color: var(--accent);
+  color: rgb(var(--gold));
   background: rgba(var(--ink), 0.04);
 }
 
@@ -103,25 +105,28 @@
 }
 
 .header__admin-link {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.05em;
-  color: var(--accent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(var(--gold));
   white-space: nowrap;
 }
 
 .header__cart-btn {
   border: 1px solid var(--border);
   padding: 9px 16px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   white-space: nowrap;
-  transition: border-color 0.2s ease;
+  transition: border-color 0.2s ease, color 0.2s ease;
 }
 
 .header__cart-btn:hover {
-  border-color: var(--accent);
+  border-color: rgb(var(--gold));
+  color: rgb(var(--gold));
 }
 
 .header__login-link {
