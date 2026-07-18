@@ -68,12 +68,21 @@ export default function Sidebar() {
 
         {brands.length > 0 && (
           <nav className="sidebar-drawer__section">
-            <p className="sidebar-drawer__label">Marcas</p>
-            {brands.map((b) => (
-              <button key={b} className="sidebar-drawer__link" onClick={() => goToBrand(b)}>
-                {b}
+            <div className="sidebar-drawer__cat">
+              <button className="sidebar-drawer__cat-head" onClick={() => toggleExpand("__brands")}>
+                <span>Marcas</span>
+                <span className={`sidebar-drawer__chev ${expanded === "__brands" ? "is-open" : ""}`}>▾</span>
               </button>
-            ))}
+              {expanded === "__brands" && (
+                <div className="sidebar-drawer__subs">
+                  {brands.map((b) => (
+                    <button key={b} className="sidebar-drawer__sub" onClick={() => goToBrand(b)}>
+                      {b}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </nav>
         )}
 

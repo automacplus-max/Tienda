@@ -7,6 +7,7 @@ import { supabase, isSupabaseConfigured } from "../config/supabaseClient.js";
 import { mapSupabaseUser } from "../utils/auth.js";
 import { readStoredToken, storeToken, clearStoredToken, isTokenValid } from "../utils/adminSession.js";
 import { buildPath, parsePath } from "../utils/routes.js";
+import { usePersistedState } from "../utils/persistedState.js";
 
 const StoreContext = createContext(null);
 
@@ -20,14 +21,14 @@ export function StoreProvider({ children }) {
   const [theme, setTheme] = useState("light");
   const [lang, setLang] = useState("es");
 
-  // ---------- Catálogo (desde Supabase o estado local) ----------
-  const [products, setProducts] = useState(INITIAL_PRODUCTS);
-  const [brands, setBrands] = useState(INITIAL_BRANDS);
-  // Las categorías (con sus subcategorías) todavía no tienen tabla propia en
-  // Supabase — viven en estado local, editable desde el panel admin, igual
-  // que marcas cuando Supabase no está configurado.
-  const [categories, setCategories] = useState(INITIAL_CATEGORIES);
-  const [loading, setLoading] = useState(true);
+  // ---------- Catálogo (persistido en localStorage) ----------
+  // Supabase todavía no tiene los permisos (RLS) para que el panel admin
+  // escriba, así que localStorage es la fuente de verdad real: los cambios
+  // del admin sobreviven a un recargado de página. Ver src/utils/persistedState.js.
+  const [products, setProducts] = usePersistedState("raiden-products", INITIAL_PRODUCTS);
+  const [brands, setBrands] = usePersistedState("raiden-brands", INITIAL_BRANDS);
+  const [categories, setCategories] = usePersistedState("raiden-categories", INITIAL_CATEGORIES);
+  const [loading, setLoading] = useState(false);
 
   // ---------- Sesión / admin ----------
   const [gateOpen, setGateOpen] = useState(true);
@@ -129,41 +130,6 @@ export function StoreProvider({ children }) {
 
     return () => subscription.unsubscribe();
   }, []);
-
-  // ---------- Cargar datos de Supabase al iniciar ----------
-  useEffect(() => {
-    loadProductsAndBrands();
-  }, []);
-
-  async function loadProductsAndBrands() {
-    try {
-      setLoading(true);
-      
-      // Intentar cargar de Supabase
-      if (isSupabaseConfigured) {
-        const { data: productsData, error: productsError } = await supabase
-          .from("products")
-          .select("*");
-
-        const { data: brandsData, error: brandsError } = await supabase
-          .from("brands")
-          .select("name");
-
-        if (!productsError && productsData?.length) {
-          setProducts(productsData);
-        }
-
-        if (!brandsError && brandsData?.length) {
-          setBrands(brandsData.map(b => b.name));
-        }
-      }
-    } catch (error) {
-      console.warn("Error cargando datos de Supabase:", error);
-      // Mantiene los datos iniciales en caso de error
-    } finally {
-      setLoading(false);
-    }
-  }
 
   function showToast(msg) {
     setToast(msg);
