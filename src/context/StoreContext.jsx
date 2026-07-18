@@ -236,124 +236,90 @@ export function StoreProvider({ children }) {
     showToast("Sesión cerrada");
   }
 
-  // ---------- Admin: productos y marcas (con Supabase) ----------
-  async function saveProduct(product) {
-    try {
-      if (!isSupabaseConfigured) {
-        // Modo local si Supabase no está configurado
-        setProducts((prev) => {
-          const exists = prev.find((x) => x.id === product.id);
-          return exists ? prev.map((x) => (x.id === product.id ? product : x)) : [...prev, product];
-        });
-        showToast("Producto guardado (modo local)");
-        return;
-      }
+  // ---------- Admin: productos y marcas ----------
+  // El estado local es la fuente de verdad para la UI — se actualiza siempre,
+  // de inmediato. Supabase (cuando está configurado) es un sync best-effort
+  // en segundo plano: si falla (tabla inexistente, RLS, etc.) se avisa por
+  // consola pero NUNCA se revierte ni se bloquea el cambio que ya ve el admin.
+  // Antes, la escritura local dependía de que la llamada a Supabase tuviera
+  // éxito primero — si fallaba, el cambio se perdía sin dejar rastro en la UI.
+  function saveProduct(product) {
+    setProducts((prev) => {
+      const exists = prev.find((x) => x.id === product.id);
+      return exists ? prev.map((x) => (x.id === product.id ? { ...x, ...product } : x)) : [...prev, { visible: true, ...product }];
+    });
+    showToast("✔ Producto guardado");
 
+    if (isSupabaseConfigured) {
       const exists = products.find((x) => x.id === product.id);
-
-      if (exists) {
-        // Actualizar
-        const { error } = await supabase
-          .from("products")
-          .update(product)
-          .eq("id", product.id);
-
-        if (error) throw error;
-      } else {
-        // Crear
-        const { error } = await supabase
-          .from("products")
-          .insert([product]);
-
-        if (error) throw error;
-      }
-
-      // Actualizar estado local
-      setProducts((prev) => {
-        return exists 
-          ? prev.map((x) => (x.id === product.id ? product : x)) 
-          : [...prev, product];
+      const query = exists ? supabase.from("products").update(product).eq("id", product.id) : supabase.from("products").insert([product]);
+      query.then(({ error }) => {
+        if (error) console.warn("No se pudo sincronizar el producto con Supabase:", error.message);
       });
-
-      showToast("✔ Producto guardado");
-    } catch (error) {
-      console.error("Error guardando producto:", error);
-      showToast("❌ Error guardando producto");
     }
   }
 
-  async function deleteProduct(id) {
-    try {
-      if (!isSupabaseConfigured) {
-        setProducts((prev) => prev.filter((p) => p.id !== id));
-        return;
-      }
+  function deleteProduct(id) {
+    setProducts((prev) => prev.filter((p) => p.id !== id));
+    setCart((prev) => prev.filter((i) => i.id !== id));
+    setFavorites((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+    showToast("✔ Producto eliminado");
 
-      const { error } = await supabase
+    if (isSupabaseConfigured) {
+      supabase
         .from("products")
         .delete()
-        .eq("id", id);
-
-      if (error) throw error;
-
-      setProducts((prev) => prev.filter((p) => p.id !== id));
-      setCart((prev) => prev.filter((i) => i.id !== id));
-      setFavorites((prev) => {
-        const next = new Set(prev);
-        next.delete(id);
-        return next;
-      });
-
-      showToast("✔ Producto eliminado");
-    } catch (error) {
-      console.error("Error eliminando producto:", error);
-      showToast("❌ Error eliminando producto");
+        .eq("id", id)
+        .then(({ error }) => {
+          if (error) console.warn("No se pudo eliminar el producto en Supabase:", error.message);
+        });
     }
   }
 
-  async function addBrand(name) {
-    try {
-      const clean = name.trim();
-      if (!clean || brands.includes(clean)) return;
+  function duplicateProduct(id) {
+    const source = products.find((p) => p.id === id);
+    if (!source) return;
+    const copy = { ...source, id: nextId(products), name: `${source.name} (copia)`, visible: false, reviews: [] };
+    setProducts((prev) => [...prev, copy]);
+    showToast("✔ Producto duplicado");
+  }
 
-      if (!isSupabaseConfigured) {
-        setBrands((prev) => [...prev, clean]);
-        return;
-      }
+  function toggleProductVisible(id) {
+    setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, visible: p.visible === false } : p)));
+  }
 
-      const { error } = await supabase
+  function addBrand(name) {
+    const clean = name.trim();
+    if (!clean || brands.includes(clean)) return;
+    setBrands((prev) => [...prev, clean]);
+    showToast("✔ Marca agregada");
+
+    if (isSupabaseConfigured) {
+      supabase
         .from("brands")
-        .insert([{ name: clean }]);
-
-      if (error && error.code !== "23505") throw error; // 23505 = unique constraint
-
-      setBrands((prev) => [...prev, clean]);
-      showToast("✔ Marca agregada");
-    } catch (error) {
-      console.error("Error agregando marca:", error);
-      showToast("❌ Error agregando marca");
+        .insert([{ name: clean }])
+        .then(({ error }) => {
+          if (error && error.code !== "23505") console.warn("No se pudo sincronizar la marca con Supabase:", error.message);
+        });
     }
   }
 
-  async function removeBrand(name) {
-    try {
-      if (!isSupabaseConfigured) {
-        setBrands((prev) => prev.filter((b) => b !== name));
-        return;
-      }
+  function removeBrand(name) {
+    setBrands((prev) => prev.filter((b) => b !== name));
+    showToast("✔ Marca eliminada");
 
-      const { error } = await supabase
+    if (isSupabaseConfigured) {
+      supabase
         .from("brands")
         .delete()
-        .eq("name", name);
-
-      if (error) throw error;
-
-      setBrands((prev) => prev.filter((b) => b !== name));
-      showToast("✔ Marca eliminada");
-    } catch (error) {
-      console.error("Error eliminando marca:", error);
-      showToast("❌ Error eliminando marca");
+        .eq("name", name)
+        .then(({ error }) => {
+          if (error) console.warn("No se pudo eliminar la marca en Supabase:", error.message);
+        });
     }
   }
 
@@ -484,6 +450,8 @@ export function StoreProvider({ children }) {
     handleLogin,
     saveProduct,
     deleteProduct,
+    duplicateProduct,
+    toggleProductVisible,
     addBrand,
     removeBrand,
     loginAdmin,

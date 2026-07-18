@@ -44,6 +44,7 @@ export default function Home() {
     const term = searchTerm.trim().toLowerCase();
 
     let list = products.filter((p) => {
+      if (p.visible === false) return false;
       const matchesSearch = term === "" || p.name.toLowerCase().includes(term);
       const matchesCategory = activeCategory === "Todo" || p.category === activeCategory;
       const matchesSubcategory = !activeSubcategory || p.subcategory === activeSubcategory;

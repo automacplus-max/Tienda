@@ -10,6 +10,7 @@ export default function ProductForm({ initial, brands, categories, onSave, onCan
           price: String(initial.price),
           originalPrice: initial.originalPrice ? String(initial.originalPrice) : "",
           subcategory: initial.subcategory || "",
+          visible: initial.visible !== false,
         }
       : {
           name: "",
@@ -24,6 +25,7 @@ export default function ProductForm({ initial, brands, categories, onSave, onCan
           badge: "",
           images: [],
           variants: [],
+          visible: true,
         }
   );
 
@@ -237,6 +239,11 @@ export default function ProductForm({ initial, brands, categories, onSave, onCan
           <button onClick={addVariantGroup}>+ Agregar grupo</button>
         </div>
       </div>
+
+      <label className="admin-form__checkbox">
+        <input type="checkbox" checked={form.visible !== false} onChange={(e) => setForm({ ...form, visible: e.target.checked })} />
+        Visible en la tienda
+      </label>
 
       <div className="admin-form__actions">
         <button disabled={!valid} className="btn-fill" onClick={submit}>
