@@ -82,7 +82,7 @@ export function StoreProvider({ children }) {
       setLoading(true);
       
       // Intentar cargar de Supabase
-      if (supabase.supabaseUrl) {
+      if (isSupabaseConfigured) {
         const { data: productsData, error: productsError } = await supabase
           .from("products")
           .select("*");
@@ -181,7 +181,7 @@ export function StoreProvider({ children }) {
   // ---------- Admin: productos y marcas (con Supabase) ----------
   async function saveProduct(product) {
     try {
-      if (!supabase.supabaseUrl) {
+      if (!isSupabaseConfigured) {
         // Modo local si Supabase no está configurado
         setProducts((prev) => {
           const exists = prev.find((x) => x.id === product.id);
@@ -226,7 +226,7 @@ export function StoreProvider({ children }) {
 
   async function deleteProduct(id) {
     try {
-      if (!supabase.supabaseUrl) {
+      if (!isSupabaseConfigured) {
         setProducts((prev) => prev.filter((p) => p.id !== id));
         return;
       }
@@ -258,7 +258,7 @@ export function StoreProvider({ children }) {
       const clean = name.trim();
       if (!clean || brands.includes(clean)) return;
 
-      if (!supabase.supabaseUrl) {
+      if (!isSupabaseConfigured) {
         setBrands((prev) => [...prev, clean]);
         return;
       }
@@ -279,7 +279,7 @@ export function StoreProvider({ children }) {
 
   async function removeBrand(name) {
     try {
-      if (!supabase.supabaseUrl) {
+      if (!isSupabaseConfigured) {
         setBrands((prev) => prev.filter((b) => b !== name));
         return;
       }
