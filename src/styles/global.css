@@ -90,6 +90,19 @@ textarea {
   color: rgba(var(--ink), 0.35);
 }
 
+.app-footer__admin-link {
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 400;
+  color: rgba(var(--ink), 0.4);
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.app-footer__admin-link:hover {
+  opacity: 1;
+}
+
 /* ---------- Botones genéricos ---------- */
 
 .btn-fill {

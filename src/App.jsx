@@ -15,7 +15,7 @@ import Confirmed from "./pages/Confirmed.jsx";
 import Admin from "./pages/Admin.jsx";
 
 function AppShell() {
-  const { theme, gateOpen, authOpen, setAuthOpen, authReason, handleLogin, authInitializing, adminModalOpen, setAdminModalOpen, loginAdmin, view, adminAuth } = useStore();
+  const { theme, gateOpen, authOpen, setAuthOpen, authReason, handleLogin, authInitializing, adminModalOpen, setAdminModalOpen, loginAdmin, view, adminAuth, navigate } = useStore();
 
   if (authInitializing) {
     return (
@@ -52,6 +52,12 @@ function AppShell() {
             <div className="app-footer__inner">
               <span>RAIDEN — Prototipo de demostración</span>
               <span>Cada pieza, autenticada. Cada venta, discreta.</span>
+              <button
+                className="app-footer__admin-link"
+                onClick={() => (adminAuth ? navigate("admin") : setAdminModalOpen(true))}
+              >
+                Administradores
+              </button>
             </div>
           </footer>
         </>
