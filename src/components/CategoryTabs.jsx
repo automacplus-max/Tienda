@@ -1,17 +1,25 @@
 // src/components/CategoryTabs.jsx
 import React from "react";
-import { CATEGORIES } from "../data/products.js";
+import { useStore } from "../context/StoreContext.jsx";
 
-export default function CategoryTabs({ activeCategory, setActiveCategory }) {
+export default function CategoryTabs({ activeCategory, onSelectCategory }) {
+  const { categories } = useStore();
+
   return (
     <div className="category-tabs">
-      {CATEGORIES.map((cat) => (
+      <button
+        onClick={() => onSelectCategory("Todo")}
+        className={`category-tabs__item ${activeCategory === "Todo" ? "is-active" : ""}`}
+      >
+        Todo
+      </button>
+      {categories.map((cat) => (
         <button
-          key={cat}
-          onClick={() => setActiveCategory(cat)}
-          className={`category-tabs__item ${activeCategory === cat ? "is-active" : ""}`}
+          key={cat.id}
+          onClick={() => onSelectCategory(cat.id)}
+          className={`category-tabs__item ${activeCategory === cat.id ? "is-active" : ""}`}
         >
-          {cat}
+          {cat.label}
         </button>
       ))}
     </div>

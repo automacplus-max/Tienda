@@ -1,14 +1,20 @@
 // src/components/ProductForm.jsx
 import React, { useState } from "react";
-import { CATEGORIES, ICONS_LIST } from "../data/products.js";
+import { ICONS_LIST } from "../data/products.js";
 
-export default function ProductForm({ initial, brands, onSave, onCancel }) {
+export default function ProductForm({ initial, brands, categories, onSave, onCancel }) {
   const [form, setForm] = useState(
     initial
-      ? { ...initial, price: String(initial.price), originalPrice: initial.originalPrice ? String(initial.originalPrice) : "" }
+      ? {
+          ...initial,
+          price: String(initial.price),
+          originalPrice: initial.originalPrice ? String(initial.originalPrice) : "",
+          subcategory: initial.subcategory || "",
+        }
       : {
           name: "",
-          category: CATEGORIES[1],
+          category: categories[0]?.id || "",
+          subcategory: "",
           brand: brands[0] || "",
           origin: "",
           price: "",
@@ -20,6 +26,8 @@ export default function ProductForm({ initial, brands, onSave, onCancel }) {
           variants: [],
         }
   );
+
+  const subcategoryOptions = categories.find((c) => c.id === form.category)?.subcategories || [];
   const [newImageUrl, setNewImageUrl] = useState("");
   const [newVariantType, setNewVariantType] = useState("");
   const [newVariantValues, setNewVariantValues] = useState("");
@@ -84,6 +92,7 @@ export default function ProductForm({ initial, brands, onSave, onCancel }) {
       ...form,
       price: Number(form.price),
       originalPrice: form.originalPrice ? Number(form.originalPrice) : null,
+      subcategory: form.subcategory || null,
       reviews: initial?.reviews || [],
     });
   }
@@ -98,10 +107,29 @@ export default function ProductForm({ initial, brands, onSave, onCancel }) {
 
         <div className="admin-form__field">
           <label>Categoría</label>
-          <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
-            {CATEGORIES.filter((c) => c !== "Todo").map((c) => (
-              <option key={c} value={c}>
-                {c}
+          <select
+            value={form.category}
+            onChange={(e) => setForm({ ...form, category: e.target.value, subcategory: "" })}
+          >
+            {categories.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="admin-form__field">
+          <label>Subcategoría (opcional)</label>
+          <select
+            value={form.subcategory || ""}
+            onChange={(e) => setForm({ ...form, subcategory: e.target.value })}
+            disabled={subcategoryOptions.length === 0}
+          >
+            <option value="">Sin subcategoría</option>
+            {subcategoryOptions.map((s) => (
+              <option key={s} value={s}>
+                {s}
               </option>
             ))}
           </select>

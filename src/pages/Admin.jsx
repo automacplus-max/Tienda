@@ -2,11 +2,12 @@
 import React, { useState } from "react";
 import PieceIcon from "../components/icons/PieceIcon.jsx";
 import ProductForm from "../components/ProductForm.jsx";
+import CategoryManager from "../components/CategoryManager.jsx";
 import { useStore } from "../context/StoreContext.jsx";
 import "../styles/admin.css";
 
 export default function Admin() {
-  const { products, brands, saveProduct, deleteProduct, addBrand, removeBrand, navigate, nextId, logoutAdmin } = useStore();
+  const { products, brands, categories, saveProduct, deleteProduct, addBrand, removeBrand, navigate, nextId, logoutAdmin } = useStore();
 
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState(null);
@@ -43,6 +44,8 @@ export default function Admin() {
           </button>
         </div>
       </div>
+
+      <CategoryManager />
 
       {/* Marcas */}
       <div className="admin__panel">
@@ -93,6 +96,7 @@ export default function Admin() {
         <ProductForm
           initial={editing}
           brands={brands}
+          categories={categories}
           onSave={handleSave}
           onCancel={() => {
             setFormOpen(false);
@@ -110,7 +114,8 @@ export default function Admin() {
             <div className="admin__product-info">
               <p className="admin__product-name">{p.name}</p>
               <p className="admin__product-meta">
-                {p.category} · {p.brand} · US$ {p.price.toLocaleString()}
+                {p.category}
+                {p.subcategory ? ` / ${p.subcategory}` : ""} · {p.brand} · US$ {p.price.toLocaleString()}
                 {p.originalPrice ? ` (antes US$ ${p.originalPrice.toLocaleString()})` : ""}
               </p>
             </div>

@@ -127,19 +127,22 @@
 }
 
 .product-card__discount {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  padding: 2px 8px;
-  border: 1px solid rgba(var(--gold), 0.5);
-  color: rgb(var(--gold));
-  background: transparent;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  padding: 4px 9px;
+  border: none;
+  border-radius: 2px;
+  color: #171717;
+  background: rgb(var(--gold));
+  box-shadow: 0 2px 8px rgba(var(--gold), 0.35);
 }
 
 .product-card__discount--hidden {
-  border-color: transparent;
   color: transparent;
-  padding: 2px 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 4px 0;
 }
 
 /* ---------- Título y procedencia ---------- */

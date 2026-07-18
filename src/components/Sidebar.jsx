@@ -1,8 +1,8 @@
 // src/components/Sidebar.jsx
 // Menú lateral deslizante (equivalente al "SideMenu" de doblem, adaptado a
-// la estética y a los datos de RAIDEN): categorías, marcas, idioma/moneda
-// y modo oscuro, todo en un mismo panel accesible desde el header.
-import React from "react";
+// la estética y a los datos de RAIDEN): categorías con subcategorías
+// desplegables, marcas, idioma/moneda y modo oscuro.
+import React, { useEffect, useState } from "react";
 import SunMoonIcon from "./icons/SunMoonIcon.jsx";
 import { useStore } from "../context/StoreContext.jsx";
 import { LOCALES } from "../utils/translations.js";
@@ -10,9 +10,18 @@ import "../styles/sidebar.css";
 
 export default function Sidebar() {
   const { sidebarOpen, setSidebarOpen, categories, brands, goToCategory, goToBrand, theme, setTheme, lang, setLang } = useStore();
+  const [expanded, setExpanded] = useState(null);
+
+  useEffect(() => {
+    if (!sidebarOpen) setExpanded(null);
+  }, [sidebarOpen]);
 
   function close() {
     setSidebarOpen(false);
+  }
+
+  function toggleExpand(catId) {
+    setExpanded((prev) => (prev === catId ? null : catId));
   }
 
   return (
@@ -28,10 +37,32 @@ export default function Sidebar() {
 
         <nav className="sidebar-drawer__section">
           <p className="sidebar-drawer__label">Categorías</p>
+          <button className="sidebar-drawer__link" onClick={() => goToCategory("Todo")}>
+            Todo
+          </button>
           {categories.map((cat) => (
-            <button key={cat} className="sidebar-drawer__link" onClick={() => goToCategory(cat)}>
-              {cat}
-            </button>
+            <div key={cat.id} className="sidebar-drawer__cat">
+              <button
+                className="sidebar-drawer__cat-head"
+                onClick={() => (cat.subcategories.length ? toggleExpand(cat.id) : goToCategory(cat.id))}
+              >
+                <span onClick={(e) => { if (cat.subcategories.length) { e.stopPropagation(); goToCategory(cat.id); } }}>
+                  {cat.label}
+                </span>
+                {cat.subcategories.length > 0 && (
+                  <span className={`sidebar-drawer__chev ${expanded === cat.id ? "is-open" : ""}`}>▾</span>
+                )}
+              </button>
+              {expanded === cat.id && cat.subcategories.length > 0 && (
+                <div className="sidebar-drawer__subs">
+                  {cat.subcategories.map((sub) => (
+                    <button key={sub} className="sidebar-drawer__sub" onClick={() => goToCategory(cat.id, sub)}>
+                      {sub}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           ))}
         </nav>
 

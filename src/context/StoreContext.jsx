@@ -1,11 +1,12 @@
 // src/context/StoreContext.jsx
 import React, { createContext, useContext, useMemo, useState, useEffect } from "react";
-import { INITIAL_PRODUCTS, INITIAL_BRANDS, CATEGORIES } from "../data/products.js";
+import { INITIAL_PRODUCTS, INITIAL_BRANDS, INITIAL_CATEGORIES } from "../data/products.js";
 import { LOCALES } from "../utils/translations.js";
 import { formatPrice } from "../utils/currency.js";
 import { supabase, isSupabaseConfigured } from "../config/supabaseClient.js";
 import { mapSupabaseUser } from "../utils/auth.js";
 import { readStoredToken, storeToken, clearStoredToken, isTokenValid } from "../utils/adminSession.js";
+import { buildPath, parsePath } from "../utils/routes.js";
 
 const StoreContext = createContext(null);
 
@@ -22,6 +23,10 @@ export function StoreProvider({ children }) {
   // ---------- Catálogo (desde Supabase o estado local) ----------
   const [products, setProducts] = useState(INITIAL_PRODUCTS);
   const [brands, setBrands] = useState(INITIAL_BRANDS);
+  // Las categorías (con sus subcategorías) todavía no tienen tabla propia en
+  // Supabase — viven en estado local, editable desde el panel admin, igual
+  // que marcas cuando Supabase no está configurado.
+  const [categories, setCategories] = useState(INITIAL_CATEGORIES);
   const [loading, setLoading] = useState(true);
 
   // ---------- Sesión / admin ----------
@@ -36,16 +41,21 @@ export function StoreProvider({ children }) {
   const [adminLoginLoading, setAdminLoginLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // ---------- Navegación ----------
-  const [view, setView] = useState("catalog");
-  const [selectedProductId, setSelectedProductId] = useState(null);
+  // ---------- Navegación (con deep-link inicial desde la URL) ----------
+  const initialRoute = useMemo(() => parsePath(window.location.pathname), []);
+  const initialAdminOk = initialRoute.view !== "admin" || isTokenValid(readStoredToken());
 
-  // ---------- Sidebar: navegación por categoría / marca ----------
-  const [categoryFilter, setCategoryFilter] = useState("Todo");
-  const [brandFilter, setBrandFilter] = useState(new Set());
+  const [view, setView] = useState(initialAdminOk ? initialRoute.view : "catalog");
+  const [selectedProductId, setSelectedProductId] = useState(initialRoute.productId || null);
 
-  function goToCategory(category) {
+  // ---------- Sidebar: navegación por categoría / subcategoría / marca ----------
+  const [categoryFilter, setCategoryFilter] = useState(initialRoute.category || "Todo");
+  const [subcategoryFilter, setSubcategoryFilter] = useState(initialRoute.subcategory || null);
+  const [brandFilter, setBrandFilter] = useState(() => new Set(initialRoute.brand ? [initialRoute.brand] : []));
+
+  function goToCategory(category, subcategory = null) {
     setCategoryFilter(category);
+    setSubcategoryFilter(subcategory);
     setBrandFilter(new Set());
     navigate("catalog");
     setSidebarOpen(false);
@@ -54,9 +64,35 @@ export function StoreProvider({ children }) {
   function goToBrand(brand) {
     setBrandFilter(new Set([brand]));
     setCategoryFilter("Todo");
+    setSubcategoryFilter(null);
     navigate("catalog");
     setSidebarOpen(false);
   }
+
+  // ---------- Sincronización con la URL (botones atrás/adelante) ----------
+  useEffect(() => {
+    const path = buildPath({ view, productId: selectedProductId, category: categoryFilter, subcategory: subcategoryFilter, brand: brandFilter });
+    if (path !== window.location.pathname) {
+      window.history.pushState(null, "", path);
+    }
+  }, [view, selectedProductId, categoryFilter, subcategoryFilter, brandFilter]);
+
+  useEffect(() => {
+    function handlePopState() {
+      const route = parsePath(window.location.pathname);
+      if (route.view === "admin" && !adminAuth) {
+        setView("catalog");
+        return;
+      }
+      setView(route.view);
+      setSelectedProductId(route.productId || null);
+      setCategoryFilter(route.category || "Todo");
+      setSubcategoryFilter(route.subcategory || null);
+      setBrandFilter(new Set(route.brand ? [route.brand] : []));
+    }
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [adminAuth]);
 
   // ---------- Carrito / favoritos / compras / reseñas ----------
   const [cart, setCart] = useState([]);
@@ -321,6 +357,38 @@ export function StoreProvider({ children }) {
     }
   }
 
+  // ---------- Admin: categorías y subcategorías ----------
+  function addCategory(label) {
+    const clean = label.trim();
+    if (!clean || categories.some((c) => c.id === clean)) return;
+    setCategories((prev) => [...prev, { id: clean, label: clean, subcategories: [] }]);
+    showToast("✔ Categoría agregada");
+  }
+
+  function removeCategory(id) {
+    setCategories((prev) => prev.filter((c) => c.id !== id));
+    if (categoryFilter === id) {
+      setCategoryFilter("Todo");
+      setSubcategoryFilter(null);
+    }
+    showToast("✔ Categoría eliminada");
+  }
+
+  function addSubcategory(categoryId, subcategory) {
+    const clean = subcategory.trim();
+    if (!clean) return;
+    setCategories((prev) =>
+      prev.map((c) => (c.id === categoryId && !c.subcategories.includes(clean) ? { ...c, subcategories: [...c.subcategories, clean] } : c))
+    );
+  }
+
+  function removeSubcategory(categoryId, subcategory) {
+    setCategories((prev) =>
+      prev.map((c) => (c.id === categoryId ? { ...c, subcategories: c.subcategories.filter((s) => s !== subcategory) } : c))
+    );
+    if (subcategoryFilter === subcategory) setSubcategoryFilter(null);
+  }
+
   // La contraseña se verifica en el servidor (api/admin-login.js) contra
   // variables de entorno — nunca viaja embebida en el bundle del cliente,
   // a diferencia del hardcode anterior.
@@ -385,11 +453,17 @@ export function StoreProvider({ children }) {
     navigate,
     categoryFilter,
     setCategoryFilter,
+    subcategoryFilter,
+    setSubcategoryFilter,
     brandFilter,
     setBrandFilter,
     goToCategory,
     goToBrand,
-    categories: CATEGORIES,
+    categories,
+    addCategory,
+    removeCategory,
+    addSubcategory,
+    removeSubcategory,
     sidebarOpen,
     setSidebarOpen,
     selectedProduct,

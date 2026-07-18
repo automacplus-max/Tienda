@@ -140,13 +140,15 @@
 }
 
 .detail__discount {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  padding: 6px 12px;
-  border: 1px solid rgba(var(--gold), 0.5);
-  color: rgb(var(--gold));
-  background: transparent;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  padding: 7px 14px;
+  border: none;
+  border-radius: 2px;
+  color: #171717;
+  background: rgb(var(--gold));
+  box-shadow: 0 3px 10px rgba(var(--gold), 0.35);
 }
 
 .detail__badge {

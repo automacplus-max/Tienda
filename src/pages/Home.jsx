@@ -9,11 +9,26 @@ import { getDiscountPercent } from "../utils/currency.js";
 import { useStore } from "../context/StoreContext.jsx";
 
 export default function Home() {
-  const { products, t, searchTerm, categoryFilter: activeCategory, setCategoryFilter: setActiveCategory, brandFilter: selectedBrands, setBrandFilter: setSelectedBrands } = useStore();
+  const {
+    products,
+    t,
+    searchTerm,
+    categoryFilter: activeCategory,
+    setCategoryFilter,
+    subcategoryFilter: activeSubcategory,
+    setSubcategoryFilter,
+    brandFilter: selectedBrands,
+    setBrandFilter: setSelectedBrands,
+  } = useStore();
 
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [sortBy, setSortBy] = useState("relevancia");
+
+  function selectCategory(cat) {
+    setCategoryFilter(cat);
+    setSubcategoryFilter(null);
+  }
 
   function toggleBrand(b) {
     setSelectedBrands((prev) => {
@@ -31,10 +46,11 @@ export default function Home() {
     let list = products.filter((p) => {
       const matchesSearch = term === "" || p.name.toLowerCase().includes(term);
       const matchesCategory = activeCategory === "Todo" || p.category === activeCategory;
+      const matchesSubcategory = !activeSubcategory || p.subcategory === activeSubcategory;
       const matchesMin = min === null || p.price >= min;
       const matchesMax = max === null || p.price <= max;
       const matchesBrand = selectedBrands.size === 0 || selectedBrands.has(p.brand);
-      return matchesSearch && matchesCategory && matchesMin && matchesMax && matchesBrand;
+      return matchesSearch && matchesCategory && matchesSubcategory && matchesMin && matchesMax && matchesBrand;
     });
 
     list = [...list];
@@ -44,7 +60,7 @@ export default function Home() {
       list.sort((a, b) => (getDiscountPercent(b.price, b.originalPrice) || 0) - (getDiscountPercent(a.price, a.originalPrice) || 0));
 
     return list;
-  }, [products, searchTerm, activeCategory, minPrice, maxPrice, selectedBrands, sortBy]);
+  }, [products, searchTerm, activeCategory, activeSubcategory, minPrice, maxPrice, selectedBrands, sortBy]);
 
   return (
     <div className="home">
@@ -59,7 +75,7 @@ export default function Home() {
           <p className="home__desc">{t("heroDesc")}</p>
         </section>
 
-        <CategoryTabs activeCategory={activeCategory} setActiveCategory={setActiveCategory} />
+        <CategoryTabs activeCategory={activeCategory} onSelectCategory={selectCategory} />
 
         <div className="home__filter-bar">
           <Filters minPrice={minPrice} maxPrice={maxPrice} onMinChange={setMinPrice} onMaxChange={setMaxPrice} />

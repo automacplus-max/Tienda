@@ -40,6 +40,7 @@ export const INITIAL_PRODUCTS = [
     id: "003",
     name: "Anillo Solitaire Vintage",
     category: "Joyas",
+    subcategory: "Anillos",
     brand: "Marca 3",
     origin: "Joyería europea, oro blanco 18k",
     price: 9800,
@@ -70,6 +71,7 @@ export const INITIAL_PRODUCTS = [
     id: "005",
     name: "Collar Perles Rares",
     category: "Joyas",
+    subcategory: "Collares",
     brand: "Marca 2",
     origin: "Maison francesa, perlas cultivadas",
     price: 6400,
@@ -99,5 +101,16 @@ export const INITIAL_PRODUCTS = [
 ];
 
 export const INITIAL_BRANDS = ["Marca 1", "Marca 2", "Marca 3"];
-export const CATEGORIES = ["Todo", "Carteras", "Joyas", "Relojes", "Ropa"];
+
+// Categorías con subcategorías desplegables — editable desde el panel
+// admin (CategoryManager), igual que en doblem. `id` es lo que queda
+// guardado en `product.category`, así que renombrar el label no rompe
+// los productos existentes, pero cambiar el id sí requeriría reasignarlos.
+export const INITIAL_CATEGORIES = [
+  { id: "Carteras", label: "Carteras", subcategories: ["Bolsos", "Maletines"] },
+  { id: "Joyas", label: "Joyas", subcategories: ["Anillos", "Collares", "Pulseras"] },
+  { id: "Relojes", label: "Relojes", subcategories: [] },
+  { id: "Ropa", label: "Ropa", subcategories: ["Abrigos", "Camperas"] },
+];
+
 export const ICONS_LIST = ["bag", "watch", "ring", "coat", "necklace", "briefcase"];
