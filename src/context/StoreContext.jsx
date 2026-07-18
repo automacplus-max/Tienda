@@ -1,10 +1,11 @@
 // src/context/StoreContext.jsx
 import React, { createContext, useContext, useMemo, useState, useEffect } from "react";
-import { INITIAL_PRODUCTS, INITIAL_BRANDS, ADMIN_PASSWORD } from "../data/products.js";
+import { INITIAL_PRODUCTS, INITIAL_BRANDS, CATEGORIES } from "../data/products.js";
 import { LOCALES } from "../utils/translations.js";
 import { formatPrice } from "../utils/currency.js";
 import { supabase, isSupabaseConfigured } from "../config/supabaseClient.js";
 import { mapSupabaseUser } from "../utils/auth.js";
+import { readStoredToken, storeToken, clearStoredToken, isTokenValid } from "../utils/adminSession.js";
 
 const StoreContext = createContext(null);
 
@@ -29,12 +30,33 @@ export function StoreProvider({ children }) {
   const [authReason, setAuthReason] = useState(null);
   const [user, setUser] = useState(null);
   const [authInitializing, setAuthInitializing] = useState(isSupabaseConfigured);
-  const [adminAuth, setAdminAuth] = useState(false);
+  const [adminAuth, setAdminAuth] = useState(() => isTokenValid(readStoredToken()));
   const [adminModalOpen, setAdminModalOpen] = useState(false);
+  const [adminLoginError, setAdminLoginError] = useState(null);
+  const [adminLoginLoading, setAdminLoginLoading] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // ---------- Navegación ----------
   const [view, setView] = useState("catalog");
   const [selectedProductId, setSelectedProductId] = useState(null);
+
+  // ---------- Sidebar: navegación por categoría / marca ----------
+  const [categoryFilter, setCategoryFilter] = useState("Todo");
+  const [brandFilter, setBrandFilter] = useState(new Set());
+
+  function goToCategory(category) {
+    setCategoryFilter(category);
+    setBrandFilter(new Set());
+    navigate("catalog");
+    setSidebarOpen(false);
+  }
+
+  function goToBrand(brand) {
+    setBrandFilter(new Set([brand]));
+    setCategoryFilter("Todo");
+    navigate("catalog");
+    setSidebarOpen(false);
+  }
 
   // ---------- Carrito / favoritos / compras / reseñas ----------
   const [cart, setCart] = useState([]);
@@ -299,14 +321,40 @@ export function StoreProvider({ children }) {
     }
   }
 
-  function loginAdmin(password) {
-    if (password === ADMIN_PASSWORD) {
+  // La contraseña se verifica en el servidor (api/admin-login.js) contra
+  // variables de entorno — nunca viaja embebida en el bundle del cliente,
+  // a diferencia del hardcode anterior.
+  async function loginAdmin(password) {
+    setAdminLoginLoading(true);
+    setAdminLoginError(null);
+    try {
+      const res = await fetch("/api/admin-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user: "admin", pass: password }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.token) {
+        setAdminLoginError(data.error || "Contraseña incorrecta.");
+        return false;
+      }
+      storeToken(data.token);
       setAdminAuth(true);
       setAdminModalOpen(false);
       navigate("admin");
       return true;
+    } catch (error) {
+      setAdminLoginError("No pudimos conectar con el servidor. Intentá de nuevo.");
+      return false;
+    } finally {
+      setAdminLoginLoading(false);
     }
-    return false;
+  }
+
+  function logoutAdmin() {
+    clearStoredToken();
+    setAdminAuth(false);
+    navigate("catalog");
   }
 
   const value = {
@@ -331,8 +379,19 @@ export function StoreProvider({ children }) {
     adminAuth,
     adminModalOpen,
     setAdminModalOpen,
+    adminLoginError,
+    adminLoginLoading,
     view,
     navigate,
+    categoryFilter,
+    setCategoryFilter,
+    brandFilter,
+    setBrandFilter,
+    goToCategory,
+    goToBrand,
+    categories: CATEGORIES,
+    sidebarOpen,
+    setSidebarOpen,
     selectedProduct,
     cart,
     cartTotal,
@@ -354,6 +413,7 @@ export function StoreProvider({ children }) {
     addBrand,
     removeBrand,
     loginAdmin,
+    logoutAdmin,
     nextId: () => nextId(products),
   };
 

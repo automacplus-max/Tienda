@@ -3,17 +3,22 @@ import React, { useState } from "react";
 import SearchBar from "./SearchBar.jsx";
 import HeartIcon from "./icons/HeartIcon.jsx";
 import SunMoonIcon from "./icons/SunMoonIcon.jsx";
+import MenuIcon from "./icons/MenuIcon.jsx";
 import { useStore } from "../context/StoreContext.jsx";
 import { LOCALES } from "../utils/translations.js";
 import "../styles/header.css";
 
 export default function Header() {
-  const { theme, setTheme, lang, setLang, t, cart, favorites, adminAuth, user, setAuthOpen, navigate, searchTerm, setSearchTerm, logout } = useStore();
+  const { theme, setTheme, lang, setLang, t, cart, favorites, adminAuth, user, setAuthOpen, navigate, searchTerm, setSearchTerm, logout, sidebarOpen, setSidebarOpen } = useStore();
   const [langMenuOpen, setLangMenuOpen] = useState(false);
 
   return (
     <header className="header">
       <div className="header__inner">
+        <button className="header__menu-btn" onClick={() => setSidebarOpen(true)} aria-label="Abrir menú">
+          <MenuIcon open={sidebarOpen} className="header__menu-icon" />
+        </button>
+
         <button className="header__logo" onClick={() => navigate("catalog")}>
           RAIDEN
         </button>

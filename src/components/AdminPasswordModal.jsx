@@ -1,13 +1,14 @@
 // src/components/AdminPasswordModal.jsx
 import React, { useState } from "react";
+import { useStore } from "../context/StoreContext.jsx";
 
-export default function AdminPasswordModal({ onClose, onSubmit }) {
+export default function AdminPasswordModal({ onClose }) {
+  const { loginAdmin, adminLoginError, adminLoginLoading } = useStore();
   const [pass, setPass] = useState("");
-  const [error, setError] = useState(false);
 
   function submit() {
-    const ok = onSubmit(pass);
-    if (!ok) setError(true);
+    if (!pass || adminLoginLoading) return;
+    loginAdmin(pass);
   }
 
   return (
@@ -19,17 +20,14 @@ export default function AdminPasswordModal({ onClose, onSubmit }) {
           type="password"
           placeholder="Contraseña"
           value={pass}
-          onChange={(e) => {
-            setPass(e.target.value);
-            setError(false);
-          }}
+          onChange={(e) => setPass(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && submit()}
-          className={`modal__input ${error ? "modal__input--error" : ""}`}
+          className={`modal__input ${adminLoginError ? "modal__input--error" : ""}`}
           autoFocus
         />
-        {error && <p className="modal__error">Contraseña incorrecta.</p>}
-        <button onClick={submit} className="modal__submit">
-          Ingresar
+        {adminLoginError && <p className="modal__error">{adminLoginError}</p>}
+        <button onClick={submit} disabled={adminLoginLoading} className="modal__submit">
+          {adminLoginLoading ? "Verificando…" : "Ingresar"}
         </button>
         <button onClick={onClose} className="modal__cancel">
           Cancelar

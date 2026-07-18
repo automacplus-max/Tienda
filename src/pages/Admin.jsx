@@ -6,7 +6,7 @@ import { useStore } from "../context/StoreContext.jsx";
 import "../styles/admin.css";
 
 export default function Admin() {
-  const { products, brands, saveProduct, deleteProduct, addBrand, removeBrand, navigate, nextId } = useStore();
+  const { products, brands, saveProduct, deleteProduct, addBrand, removeBrand, navigate, nextId, logoutAdmin } = useStore();
 
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState(null);
@@ -34,9 +34,14 @@ export default function Admin() {
     <div className="admin">
       <div className="admin__header">
         <h1>Panel de administradores</h1>
-        <button className="admin__exit" onClick={() => navigate("catalog")}>
-          ← Volver a la tienda
-        </button>
+        <div className="admin__header-actions">
+          <button className="admin__exit" onClick={() => navigate("catalog")}>
+            ← Volver a la tienda
+          </button>
+          <button className="admin__exit" onClick={logoutAdmin}>
+            Cerrar sesión
+          </button>
+        </div>
       </div>
 
       {/* Marcas */}

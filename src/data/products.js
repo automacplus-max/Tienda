@@ -101,4 +101,3 @@ export const INITIAL_PRODUCTS = [
 export const INITIAL_BRANDS = ["Marca 1", "Marca 2", "Marca 3"];
 export const CATEGORIES = ["Todo", "Carteras", "Joyas", "Relojes", "Ropa"];
 export const ICONS_LIST = ["bag", "watch", "ring", "coat", "necklace", "briefcase"];
-export const ADMIN_PASSWORD = "teamokiara";

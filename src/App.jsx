@@ -4,6 +4,7 @@ import { StoreProvider, useStore } from "./context/StoreContext.jsx";
 import Gate from "./components/Gate.jsx";
 import AuthModal from "./components/AuthModal.jsx";
 import AdminPasswordModal from "./components/AdminPasswordModal.jsx";
+import Sidebar from "./components/Sidebar.jsx";
 import Header from "./components/Header.jsx";
 import Toast from "./components/Toast.jsx";
 import Home from "./pages/Home.jsx";
@@ -15,7 +16,7 @@ import Confirmed from "./pages/Confirmed.jsx";
 import Admin from "./pages/Admin.jsx";
 
 function AppShell() {
-  const { theme, gateOpen, authOpen, setAuthOpen, authReason, handleLogin, authInitializing, adminModalOpen, setAdminModalOpen, loginAdmin, view, adminAuth, navigate } = useStore();
+  const { theme, gateOpen, authOpen, setAuthOpen, authReason, handleLogin, authInitializing, adminModalOpen, setAdminModalOpen, view, adminAuth, navigate } = useStore();
 
   if (authInitializing) {
     return (
@@ -31,10 +32,11 @@ function AppShell() {
 
       {authOpen && <AuthModal reason={authReason} onClose={() => setAuthOpen(false)} onLogin={handleLogin} />}
 
-      {adminModalOpen && <AdminPasswordModal onClose={() => setAdminModalOpen(false)} onSubmit={loginAdmin} />}
+      {adminModalOpen && <AdminPasswordModal onClose={() => setAdminModalOpen(false)} />}
 
       {!gateOpen && (
         <>
+          <Sidebar />
           <Header />
           <Toast />
 

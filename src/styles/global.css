@@ -4,11 +4,11 @@
    estilos propios de cada página/sección viven en su propio archivo:
    header.css, product.css, detail.css, cart.css, admin.css.
 
-   Sistema tipográfico: Fraunces (serif editorial) para titulares, precios
-   y el wordmark — el registro "casa de moda" — y Mulish (sans) para
-   etiquetas, UI y cuerpo de texto, que se lee mejor en tamaños chicos. */
+   Tipografía: Mulish en todo el sitio (títulos en negrita, UI/cuerpo en
+   pesos regulares) — el acento de la marca lo dan el dorado y el
+   tracking, no un cambio de familia tipográfica. */
 
-@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Mulish:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Mulish:wght@400;500;600;700;800&display=swap");
 
 :root {
   --bg: #ffffff;
@@ -19,7 +19,6 @@
   --btn-bg: #171717;
   --btn-text: #ffffff;
   --border: rgba(23, 23, 23, 0.12);
-  --font-display: "Fraunces", "Georgia", serif;
 }
 
 .raiden-app.dark {
@@ -54,8 +53,13 @@ body {
   transition: background-color 0.35s ease, color 0.35s ease;
 }
 
-.raiden-app,
-.raiden-app * {
+/* :where() da especificidad cero a esta regla — así una transición más
+   específica definida por un componente (ej. .product-card, que además
+   anima transform/box-shadow) siempre gana la cascada, sin importar el
+   orden en que Vite concatene los CSS. Sin esto, este selector genérico
+   competía en igualdad de especificidad y a veces reemplazaba por
+   completo la transición del componente (el hover "saltaba" sin animar). */
+:where(.raiden-app, .raiden-app *) {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
@@ -214,12 +218,9 @@ textarea {
 }
 
 .home__title {
-  font-family: var(--font-display);
-  font-size: clamp(38px, 5vw, 58px);
-  font-weight: 500;
-  font-style: italic;
-  line-height: 1.12;
-  letter-spacing: -0.01em;
+  font-size: clamp(34px, 5vw, 48px);
+  font-weight: 700;
+  line-height: 1.15;
   margin: 0 0 18px;
 }
 
@@ -494,11 +495,9 @@ textarea {
 }
 
 .gate__wordmark {
-  font-family: var(--font-display);
-  font-size: clamp(52px, 11vw, 108px);
-  font-weight: 500;
-  font-style: italic;
-  letter-spacing: 0.01em;
+  font-size: clamp(48px, 10vw, 100px);
+  font-weight: 700;
+  letter-spacing: 0.08em;
   margin: 0 0 18px;
 }
 
@@ -580,10 +579,8 @@ textarea {
 }
 
 .modal__title {
-  font-family: var(--font-display);
-  font-size: 24px;
-  font-weight: 500;
-  font-style: italic;
+  font-size: 22px;
+  font-weight: 700;
   margin: 0 0 8px;
 }
 

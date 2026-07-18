@@ -9,12 +9,10 @@ import { getDiscountPercent } from "../utils/currency.js";
 import { useStore } from "../context/StoreContext.jsx";
 
 export default function Home() {
-  const { products, t, searchTerm } = useStore();
+  const { products, t, searchTerm, categoryFilter: activeCategory, setCategoryFilter: setActiveCategory, brandFilter: selectedBrands, setBrandFilter: setSelectedBrands } = useStore();
 
-  const [activeCategory, setActiveCategory] = useState("Todo");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
-  const [selectedBrands, setSelectedBrands] = useState(new Set());
   const [sortBy, setSortBy] = useState("relevancia");
 
   function toggleBrand(b) {
